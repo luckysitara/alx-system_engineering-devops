@@ -1,49 +1,163 @@
-# 0x1A. Application server
+0x0A. Configuration management
+DevOps
+SysAdmin
+Scripting
+CI/CD
+ By: Sylvain Kalache
+ Weight: 1
+ Ongoing second chance project - started Nov 24, 2023 6:00 AM, must end by Nov 30, 2023 6:00 AM
+ An auto review will be launched at the deadline
+In a nutshell…
+Auto QA review: 0.0/9 mandatory
+Altogether:  0.0%
+Mandatory: 0.0%
+Optional: no optional tasks
+Background Context
 
-## Resources:books:
+
+When I was working for SlideShare, I worked on an auto-remediation tool called Skynet that monitored, scaled and fixed Cloud infrastructure. I was using a parallel job-execution system called MCollective that allowed me to execute commands to one or multiple servers at the same time. I could apply an action to a selected set of servers by applying a filter such as the server’s hostname or any other metadata we had (server type, server environment…). At some point, a bug was present in my code that sent nil to the filter method.
+
+There were 2 pieces of bad news:
+
+When MCollective receives nil as an argument for its filter method, it takes this to mean ‘all servers’
+The action I sent was to terminate the selected servers
+I started the parallel job-execution and after some time, I realized that it was taking longer than expected. Looking at logs I realized that I was shutting down SlideShare’s entire document conversion environment. Actually, 75% of all our conversion infrastructure servers had been shut down, resulting in users not able to convert their PDFs, powerpoints, and videos… Pretty bad!
+
+Thanks to Puppet, we were able to restore our infrastructure to normal operation in under 1H, pretty impressive. Imagine if we had to do everything manually: launching the servers, configuring and linking them, importing application code, starting every process, and obviously, fixing all the bugs (you should know by now that complicated infrastructure always goes sideways)…
+
+Obviously writing Puppet code for your infrastructure requires an investment of time and energy, but in the long term, it is for sure a must-have.
+
+
+
+That was me ^_^‘: https://twitter.com/devopsreact/status/836971570136375296
+
+Resources
 Read or watch:
-* [Application server vs web server](https://intranet.hbtn.io/rltoken/RerpYBxsgrpIorHjbDgulw)
-* [How to Serve a Flask Application with Gunicorn and Nginx on Ubuntu 16.04](https://intranet.hbtn.io/rltoken/uosy5QXdMbDPA1tFTR1eoA)
-* [Running Gunicorn](https://intranet.hbtn.io/rltoken/QTnnkj6vfQV9ovW_eYWWDQ)
-* [Be careful with the way Flask manages slash](https://intranet.hbtn.io/rltoken/whE8do28ZiJJoJLyb1ACwA)
-* [route](https://intranet.hbtn.io/rltoken/JLjrXD4MLS3rUkQr5QyxtA)
-* [Upstart documentation](https://intranet.hbtn.io/rltoken/oQPs-o5UUcZkxOw5sNIM0g)
 
----
-## Learning Objectives:bulb:
-What you should learn from this project:
+Intro to Configuration Management
+Puppet resource type: file (check “Resource types” for all manifest types in the left menu)
+Puppet’s Declarative Language: Modeling Instead of Scripting
+Puppet lint
+Puppet emacs mode
+Requirements
+General
+All your files will be interpreted on Ubuntu 20.04 LTS
+All your files should end with a new line
+A README.md file at the root of the folder of the project is mandatory
+Your Puppet manifests must pass puppet-lint version 2.1.1 without any errors
+Your Puppet manifests must run without error
+Your Puppet manifests first line must be a comment explaining what the Puppet manifest is about
+Your Puppet manifests files must end with the extension .pp
+Note on Versioning
+Your Ubuntu 20.04 VM should have Puppet 5.5 preinstalled.
 
----
+Install puppet
+$ apt-get install -y ruby=1:2.7+1 --allow-downgrades
+$ apt-get install -y ruby-augeas
+$ apt-get install -y ruby-shadow
+$ apt-get install -y puppet
+You do not need to attempt to upgrade versions. This project is simply a set of tasks to familiarize you with the basic level syntax which is virtually identical in newer versions of Puppet.
 
-### [0. Set up development with Python](./README.md)
-* Let’s serve what you built for AirBnB clone v2 - Web framework on web-01. This task is an exercise in setting up your development environment, which is used for testing and debugging your code before deploying it to production.
+Puppet 5 Docs
 
+Install puppet-lint
+$ gem install puppet-lint
+Tasks
+0. Create a file
+mandatory
+Score: 0.0% (Checks completed: 0.0%)
+Using Puppet, create a file in /tmp.
 
-### [1. Set up production with Gunicorn](./2-app_server-nginx_config)
-* Now that you have your development environment set up, let’s get your production application server set up with Gunicorn on web-01, port 5000. You’ll need to install Gunicorn and any libraries required by your application. Your Flask application object will serve as a WSGI entry point into your application. This will be your production environment. As you can see we want the production and development of your application to use the same port, so the conditions for serving your dynamic content are the same in both environments.
+Requirements:
 
+File path is /tmp/school
+File permission is 0744
+File owner is www-data
+File group is www-data
+File contains I love Puppet
+Example:
 
-### [2. Serve a page with Nginx](./3-app_server-nginx_config)
-* Building on your work in the previous tasks, configure Nginx to serve your page from the route /airbnb-onepage/
+root@6712bef7a528:~# puppet-lint --version
+puppet-lint 2.5.2
+root@6712bef7a528:~# puppet-lint 0-create_a_file.pp
+root@6712bef7a528:~# 
+root@6712bef7a528:~# puppet apply 0-create_a_file.pp
+Notice: Compiled catalog for 6712bef7a528.ec2.internal in environment production in 0.04 seconds
+Notice: /Stage[main]/Main/File[school]/ensure: defined content as '{md5}f1b70c2a42a98d82224986a612400db9'
+Notice: Finished catalog run in 0.03 seconds
+root@6712bef7a528:~#
+root@6712bef7a528:~# ls -l /tmp/school
+-rwxr--r-- 1 www-data www-data 13 Mar 19 23:12 /tmp/school
+root@6712bef7a528:~# cat /tmp/school
+I love Puppetroot@6712bef7a528:~#
+Repo:
 
+GitHub repository: alx-system_engineering-devops
+Directory: 0x0A-configuration_management
+File: 0-create_a_file.pp
+    
+1. Install a package
+mandatory
+Score: 0.0% (Checks completed: 0.0%)
+Using Puppet, install flask from pip3.
 
-### [3. Add a route with query parameters](./4-app_server-nginx_config)
-* Building on what you did in the previous tasks, let’s expand our web application by adding another service for Gunicorn to handle. In AirBnB_clone_v2/web_flask/6-number_odd_or_even, the route /number_odd_or_even/<int:n> should already be defined to render a page telling you whether an integer is odd or even. You’ll need to configure Nginx to proxy HTTP requests to the route /airbnb-dynamic/number_odd_or_even/(any integer) to a Gunicorn instance listening on port 5001. The key to this exercise is getting Nginx configured to proxy requests to processes listening on two different ports. You are not expected to keep your application server processes running. If you want to know how to run multiple instances of Gunicorn without having multiple terminals open, see tips below.
+Requirements:
 
+Install flask
+Version must be 2.1.0
+Example:
 
-### [4. Let's do this for your API](./5-app_server-nginx_config)
-* Let’s serve what you built for AirBnB clone v3 - RESTful API on web-01.
+root@9665f0a47391:/# puppet apply 1-install_a_package.pp
+Notice: Compiled catalog for 9665f0a47391 in environment production in 0.14 seconds
+Notice: /Stage[main]/Main/Package[Flask]/ensure: created
+Notice: Applied catalog in 0.20 seconds
+root@9665f0a47391:/# flask --version
+Python 3.8.10
+Flask 2.1.0
+Werkzeug 2.1.1
+Repo:
 
+GitHub repository: alx-system_engineering-devops
+Directory: 0x0A-configuration_management
+File: 1-install_a_package.pp
+    
+2. Execute a command
+mandatory
+Score: 0.0% (Checks completed: 0.0%)
+Using Puppet, create a manifest that kills a process named killmenow.
 
-### [5. Serve your AirBnB clone](./gunicorn.service)
-* Let’s serve what you built for AirBnB clone - Web dynamic on web-01.
+Requirements:
 
+Must use the exec Puppet resource
+Must use pkill
+Example:
 
-### [6. Deploy it!](./4-reload_gunicorn_no_downtime)
-* Once you’ve got your application server configured, you want to set it up to run by default when Linux is booted. This way when your server inevitably requires downtime (you have to shut it down or restart it for one reason or another), your Gunicorn process(es) will start up as part of the system initialization process, freeing you from having to manually restart them. For this we will use systemd. You can read more about systemd in the documentation posted at the top of this project but to put it succinctly, it is a system initialization daemon for the Linux OS (amongst other things). For this task you will write a systemd script which will start your application server for you. As mentioned in the video at the top of the project, you do not need to create a Unix socket to bind the process to.
+Terminal #0 - starting my process
 
+root@d391259bf577:/# cat killmenow
+#!/bin/bash
+while [[ true ]]
+do
+    sleep 2
+done
 
----
+root@d391259bf577:/# ./killmenow
+Terminal #1 - executing my manifest
 
-## Author
-* **Geoffrey Zoref** - [Gzoref](https://github.com/Gzoref)
+root@d391259bf577:/# puppet apply 2-execute_a_command.pp
+Notice: Compiled catalog for d391259bf577.hsd1.ca.comcast.net in environment production in 0.01 seconds
+Notice: /Stage[main]/Main/Exec[killmenow]/returns: executed successfully
+Notice: Finished catalog run in 0.10 seconds
+root@d391259bf577:/# 
+Terminal #0 - process has been terminated
+
+root@d391259bf577:/# ./killmenow
+Terminated
+root@d391259bf577:/#
+Repo:
+
+GitHub repository: alx-system_engineering-devops
+Directory: 0x0A-configuration_management
+File: 2-execute_a_command.pp
+    
+

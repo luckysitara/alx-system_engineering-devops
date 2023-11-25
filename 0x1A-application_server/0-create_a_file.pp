@@ -1,3 +1,4 @@
+#File: 0-create_a_file.pp
 file { '/tmp/school':
   ensure  => 'file',
   mode    => '0744',
@@ -5,4 +6,3 @@ file { '/tmp/school':
   group   => 'www-data',
   content => 'I love Puppet',
 }
-
