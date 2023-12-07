@@ -24,4 +24,4 @@ Let’s also add other subdomains to make our life easier, and write a Bash scri
 ---
 
 ## Author
-* **Geoffrey Zoref** - [Gzoref](https://github.com/Gzoref)
+**LUCKYSITARA BUGHACKER**
