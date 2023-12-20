@@ -1,0 +1,14 @@
+#!/bin/env bash
+
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <username>"
+    exit 1
+fi
+
+# Assign the provided username to a variable
+USERNAME=$1
+
+# Run whoami command under the specified user
+su -c "whoami" -s /bin/bash "$USERNAME"
+
