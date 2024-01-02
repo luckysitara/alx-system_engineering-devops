@@ -3,10 +3,10 @@
 For a given employee ID, returns information about his/her TODO list progress.
 '''
 
-if __name__ == '__main__':
-    import requests
-    import sys
+import requests
+import sys
 
+if __name__ == '__main__':
     NUMBER_OF_DONE_TASKS = 0
     TASK_TITLE = []
     USER_ID = sys.argv[1]
